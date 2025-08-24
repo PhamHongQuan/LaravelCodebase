@@ -26,7 +26,7 @@ A modern Laravel application template with advanced architecture patterns, cachi
 ### 1. Clone the repository
 ```bash
 git clone https://github.com/PhamHongQuan/LaravelCodebase.git
-cd LaravelTemplate
+cd LaravelCodebase
 ```
 
 ### 2. Build and start Docker containers
