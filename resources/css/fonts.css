@@ -1,0 +1,16 @@
+/* Font Definitions */
+@font-face {
+    font-family: 'PlaywriteMXGuides';
+    src: url('/fonts/PlaywriteMXGuides-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+/* Font Variables */
+:root {
+    --font-primary: 'PlaywriteMXGuides', serif;
+}
+
+

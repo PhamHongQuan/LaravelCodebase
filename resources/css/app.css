@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+@import './fonts.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'PlaywriteMXGuides', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-primary: 'PlaywriteMXGuides', serif;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-family: var(--font-primary);
+}
+
