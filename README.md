@@ -2,6 +2,13 @@
 
 A modern Laravel application template with advanced architecture patterns, caching system, and admin panel integration.
 
+## 📋 Requirements
+
+- Docker & Docker Compose
+- PHP 8.2+ (for local development)
+- Composer
+- Node.js & npm
+
 ## 🚀 Features
 
 - **Laravel 12** with PHP 8.4
@@ -14,13 +21,6 @@ A modern Laravel application template with advanced architecture patterns, cachi
 - **Vite** for asset compilation
 - **MySQL & Redis** for data and caching
 
-## 📋 Requirements
-
-- Docker & Docker Compose
-- PHP 8.2+ (for local development)
-- Composer
-- Node.js & npm
-
 ## 🛠️ Installation
 
 ### 1. Clone the repository
@@ -29,97 +29,45 @@ git clone https://github.com/PhamHongQuan/LaravelCodebase.git
 cd LaravelCodebase
 ```
 
-### 2. Build and start Docker containers
+### 2. Environment setup
+```bash
+copy .env.example .env
+```
+
+### 3. Build and start Docker containers
 ```bash
 docker compose build
 docker compose up -d
 ```
 
-### 3. Install PHP dependencies
+### 4. Install PHP dependencies
 ```bash
 docker exec -it lara_app bash
 composer install
 ```
 
-### 4. Install Node.js dependencies
+### 5. Generate application key
+```bash
+docker exec -it lara_app bash
+php artisan key:generate
+```
+
+### 6. Install Node.js dependencies
 ```bash
 npm install
 ```
 
-### 5. Environment setup
+### 7. Database setup
 ```bash
-cp .env.example .env
-php artisan key:generate
-```
-
-### 6. Database setup
-```bash
+docker exec -it lara_app bash
 php artisan migrate
 php artisan db:seed --class=DatabaseSeeder
 ```
 
-### 7. Build assets
+### 8. Build assets
 ```bash
 npm run build
 ```
-
-## 🏗️ Architecture
-
-### Repository Pattern
-The application implements a robust repository pattern with caching capabilities:
-
-- **Contracts**: `app/Repositories/Contracts/IRepository.php`
-- **Implementation**: `app/Repositories/Implementations/Repository.php`
-- **Cache Behavior**: `app/Repositories/Cache/Behavior/ShouldCache.php`
-
-### Service Layer
-Business logic is abstracted through service classes:
-
-- **Contracts**: `app/Services/Contracts/IService.php`
-- **Implementation**: `app/Services/Implementations/Service.php`
-- **Cache Service**: `app/Services/Cache/CacheService.php`
-
-### Event System
-Cache events for monitoring and logging:
-
-- **Query Events**: `app/Events/Cache/Queries/`
-- **Update Events**: `app/Events/Cache/Updates/`
-
-## 🎨 Admin Panel
-
-The application includes Filament admin panel accessible at `/admin`:
-
-- Modern, responsive admin interface
-- Built-in authentication
-- Resource management
-- Dashboard widgets
-- Customizable themes
-
-## 🗄️ Database
-
-### Cache System
-- Database-based caching with Redis support
-- Cache table migration included
-- Tagged caching for better organization
-- Automatic cache invalidation
-
-### Available Tables
-- `users` - User management
-- `cache` - Application caching
-- `cache_locks` - Cache locking mechanism
-- `jobs` - Queue jobs
-
-## 🐳 Docker Services
-
-- **lara_app** - Laravel application (PHP 8.4)
-- **lara_mysql** - MySQL 8.0 database
-- **lara_redis** - Redis cache server
-
-### Ports
-- Application: `80` (configurable via `APP_PORT`)
-- Vite Dev Server: `5173` (configurable via `VITE_PORT`)
-- MySQL: `3306` (configurable via `FORWARD_DB_PORT`)
-- Redis: `6379` (configurable via `FORWARD_REDIS_PORT`)
 
 ## 🚀 Development
 
@@ -153,6 +101,64 @@ php artisan test
 ```bash
 ./vendor/bin/pint
 ```
+
+## 🐳 Docker Services
+
+- **lara_app** - Laravel application (PHP 8.4)
+- **lara_mysql** - MySQL 8.0 database
+- **lara_redis** - Redis cache server
+
+### Ports
+- Application: `80` (configurable via `APP_PORT`)
+- Vite Dev Server: `5173` (configurable via `VITE_PORT`)
+- MySQL: `3306` (configurable via `FORWARD_DB_PORT`)
+- Redis: `6379` (configurable via `FORWARD_REDIS_PORT`)
+
+## 🗄️ Database
+
+### Cache System
+- Database-based caching with Redis support
+- Cache table migration included
+- Tagged caching for better organization
+- Automatic cache invalidation
+
+### Available Tables
+- `users` - User management
+- `cache` - Application caching
+- `cache_locks` - Cache locking mechanism
+- `jobs` - Queue jobs
+
+## 🏗️ Architecture
+
+### Repository Pattern
+The application implements a robust repository pattern with caching capabilities:
+
+- **Contracts**: `app/Repositories/Contracts/IRepository.php`
+- **Implementation**: `app/Repositories/Implementations/Repository.php`
+- **Cache Behavior**: `app/Repositories/Cache/Behavior/ShouldCache.php`
+
+### Service Layer
+Business logic is abstracted through service classes:
+
+- **Contracts**: `app/Services/Contracts/IService.php`
+- **Implementation**: `app/Services/Implementations/Service.php`
+- **Cache Service**: `app/Services/Cache/CacheService.php`
+
+### Event System
+Cache events for monitoring and logging:
+
+- **Query Events**: `app/Events/Cache/Queries/`
+- **Update Events**: `app/Events/Cache/Updates/`
+
+## 🎨 Admin Panel
+
+The application includes Filament admin panel accessible at `/admin`:
+
+- Modern, responsive admin interface
+- Built-in authentication
+- Resource management
+- Dashboard widgets
+- Customizable themes
 
 ## 📁 Project Structure
 
