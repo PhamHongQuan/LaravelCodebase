@@ -1,61 +1,270 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Template
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern Laravel application template with advanced architecture patterns, caching system, and admin panel integration.
 
-## About Laravel
+## 🚀 Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Laravel 12** with PHP 8.4
+- **Repository Pattern** with caching support
+- **Filament Admin Panel** for easy content management
+- **Docker & Laravel Sail** for development environment
+- **Event-driven Architecture** with cache events
+- **Service Layer** abstraction
+- **Tailwind CSS** for styling
+- **Vite** for asset compilation
+- **MySQL & Redis** for data and caching
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📋 Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Docker & Docker Compose
+- PHP 8.2+ (for local development)
+- Composer
+- Node.js & npm
 
-## Learning Laravel
+## 🛠️ Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Clone the repository
+```bash
+git clone https://github.com/PhamHongQuan/LaravelCodebase.git
+cd LaravelTemplate
+```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 2. Build and start Docker containers
+```bash
+docker compose build
+docker compose up -d
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 3. Install PHP dependencies
+```bash
+docker exec -it lara_app bash
+composer install
+```
 
-## Laravel Sponsors
+### 4. Install Node.js dependencies
+```bash
+npm install
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 5. Environment setup
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-### Premium Partners
+### 6. Database setup
+```bash
+php artisan migrate
+php artisan db:seed --class=DatabaseSeeder
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 7. Build assets
+```bash
+npm run build
+```
 
-## Contributing
+## 🏗️ Architecture
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Repository Pattern
+The application implements a robust repository pattern with caching capabilities:
 
-## Code of Conduct
+- **Contracts**: `app/Repositories/Contracts/IRepository.php`
+- **Implementation**: `app/Repositories/Implementations/Repository.php`
+- **Cache Behavior**: `app/Repositories/Cache/Behavior/ShouldCache.php`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Service Layer
+Business logic is abstracted through service classes:
 
-## Security Vulnerabilities
+- **Contracts**: `app/Services/Contracts/IService.php`
+- **Implementation**: `app/Services/Implementations/Service.php`
+- **Cache Service**: `app/Services/Cache/CacheService.php`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Event System
+Cache events for monitoring and logging:
 
-## License
+- **Query Events**: `app/Events/Cache/Queries/`
+- **Update Events**: `app/Events/Cache/Updates/`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🎨 Admin Panel
+
+The application includes Filament admin panel accessible at `/admin`:
+
+- Modern, responsive admin interface
+- Built-in authentication
+- Resource management
+- Dashboard widgets
+- Customizable themes
+
+## 🗄️ Database
+
+### Cache System
+- Database-based caching with Redis support
+- Cache table migration included
+- Tagged caching for better organization
+- Automatic cache invalidation
+
+### Available Tables
+- `users` - User management
+- `cache` - Application caching
+- `cache_locks` - Cache locking mechanism
+- `jobs` - Queue jobs
+
+## 🐳 Docker Services
+
+- **lara_app** - Laravel application (PHP 8.4)
+- **lara_mysql** - MySQL 8.0 database
+- **lara_redis** - Redis cache server
+
+### Ports
+- Application: `80` (configurable via `APP_PORT`)
+- Vite Dev Server: `5173` (configurable via `VITE_PORT`)
+- MySQL: `3306` (configurable via `FORWARD_DB_PORT`)
+- Redis: `6379` (configurable via `FORWARD_REDIS_PORT`)
+
+## 🚀 Development
+
+### Start development server
+```bash
+# Using Docker (recommended)
+docker compose up -d
+
+# Using Laravel Sail
+./vendor/bin/sail up -d
+
+# Using artisan serve (local PHP required)
+php artisan serve
+```
+
+### Asset compilation
+```bash
+# Development mode with hot reload
+npm run dev
+
+# Production build
+npm run build
+```
+
+### Running tests
+```bash
+php artisan test
+```
+
+### Code formatting
+```bash
+./vendor/bin/pint
+```
+
+## 📁 Project Structure
+
+```
+LaravelTemplate/
+├── app/
+│   ├── Events/Cache/          # Cache events
+│   ├── Http/Controllers/      # Controllers
+│   ├── Models/               # Eloquent models
+│   ├── Providers/            # Service providers
+│   ├── Repositories/         # Repository pattern
+│   └── Services/             # Service layer
+├── config/                   # Configuration files
+├── database/                 # Migrations, seeders, factories
+├── public/                   # Web root
+├── resources/                # Views, assets, language files
+├── routes/                   # Route definitions
+├── storage/                  # Application storage
+└── tests/                    # Test files
+```
+
+## 🔧 Configuration
+
+### Environment Variables
+Key environment variables to configure:
+
+```env
+APP_NAME=LaravelTemplate
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://localhost
+
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=sail
+DB_PASSWORD=password
+
+CACHE_STORE=database
+REDIS_HOST=redis
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+```
+
+### Cache Configuration
+The application supports multiple cache drivers:
+- `database` (default) - Uses database cache table
+- `redis` - Uses Redis server
+- `file` - Uses file system
+- `array` - In-memory cache
+
+## 📚 Usage Examples
+
+### Creating a Repository
+```php
+use App\Repositories\Implementations\Repository;
+use App\Repositories\Cache\Behavior\ShouldCache;
+
+class UserRepository extends Repository implements ShouldCache
+{
+    public function __construct(User $model)
+    {
+        parent::__construct($model);
+    }
+}
+```
+
+### Using the Service Layer
+```php
+use App\Services\Implementations\Service;
+
+class UserService extends Service
+{
+    public function __construct(UserRepository $repository)
+    {
+        parent::__construct($repository);
+    }
+}
+```
+
+### Cache Operations
+```php
+use App\Services\Cache\CacheService;
+
+$cacheService = app(CacheService::class);
+
+// Set cache with tags
+$cacheService->set('key', 'value', 3600, ['users']);
+
+// Get cached data
+$data = $cacheService->get('key', ['users']);
+
+// Delete cache by pattern
+$cacheService->deleteBy('users:*', ['users']);
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## 🆘 Support
+
+For support and questions:
+- Create an issue in the repository
+- Check the Laravel documentation
+- Review Filament documentation for admin panel features
