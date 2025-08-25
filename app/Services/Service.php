@@ -1,8 +1,7 @@
 <?php
-namespace App\Services\Implementations;
-
-use App\Repositories\Contracts\IRepository;
-use App\Services\Contracts\IService;
+namespace App\Services;
+use App\Interfaces\Repositories\IRepository;
+use App\Interfaces\Services\IService;
 
 abstract class Service implements IService {
     protected IRepository $repository;

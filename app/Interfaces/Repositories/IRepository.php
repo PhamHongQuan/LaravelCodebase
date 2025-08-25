@@ -1,6 +1,9 @@
 <?php
+
 namespace App\Interfaces\Repositories;
-interface IRepository {
+
+interface IRepository
+{
     public function getAll(array $options = []);
     public function getById(int $id);
     public function getBy(array $criteria, array $options = []);

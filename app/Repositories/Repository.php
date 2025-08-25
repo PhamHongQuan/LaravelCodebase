@@ -1,19 +1,18 @@
 <?php
-namespace App\Repositories\Implementations;
+namespace App\Repositories;
+use App\Events\Cache\Queries\GetModels;
 use App\Events\Cache\Queries\GetModelByCriteria;
 use App\Events\Cache\Queries\GetModelById;
-use App\Events\Cache\Queries\GetModels;
 use App\Events\Cache\Updates\ModelCreated;
 use App\Events\Cache\Updates\ModelDeleted;
 use App\Events\Cache\Updates\ModelUpdated;
-use App\Repositories\Cache\Behavior\ShouldCache;
-use App\Repositories\Contracts\IRepository;
+use App\Interfaces\Cache\Behaviour\ShouldCache;
+use App\Interfaces\Repositories\IRepository;
 use App\Services\Cache\CacheService;
 use Cache;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Log;
-
 abstract class Repository implements IRepository
 {
     protected Model $model;
@@ -153,10 +152,9 @@ abstract class Repository implements IRepository
                 return $cachedData;
         }
 
-        $query = $this->model;
-        foreach ($criteria as $key => $value) {
-            $query = $query->where($key, $value);
-        }
+        $query = $this->model->query();
+        $query = $this->_handleCriteriaQuery($criteria, $query);
+
         $data = $this->handleQueryOption($query, $options);
         if ($this instanceof ShouldCache) {
             $eventInstance->setData($data);
@@ -284,9 +282,10 @@ abstract class Repository implements IRepository
      */
     public function count(array $criteria = []): int
     {
+        $query = $this->model::query();
         if (!empty($criteria))
-            return $this->model->where($criteria)->count();
-        return $this->model::query()->count();
+            $query = $this->_handleCriteriaQuery($criteria, $query);
+        return $query->count();
     }
 
     public function autoComplete(string $term, ?string $column = 'name', array $selectedColumns = ['*']): \Illuminate\Database\Eloquent\Collection
@@ -301,5 +300,41 @@ abstract class Repository implements IRepository
             END", [$term, "{$term}%"]);
         $query->limit($limit);
         return $query->get($selectedColumns);
+    }
+
+    /**
+     * @param array $criteria
+     * @param mixed $query
+     */
+    public function _handleCriteriaQuery(array $criteria, mixed $query)
+    {
+        foreach ($criteria as $key => $value) {
+            $query = $query->where(function ($q) use ($key, $value) {
+                if (is_array($value)) {
+                    // Ex: ['operator' => 'like', 'value' => '%abc%']
+                    $operator = $value['operator'] ?? '=';
+                    $val = $value['value'] ?? null;
+
+                    if ($operator === 'not_null') {
+                        $q->whereNotNull($key);
+                    } elseif ($operator === 'null') {
+                        $q->whereNull($key);
+                    } elseif ($operator === 'in') {
+                        $q->whereIn($key, (array)$val);
+                    } elseif ($operator === 'not_in') {
+                        $q->whereNotIn($key, (array)$val);
+                    } else {
+                        $q->where($key, $operator, $val);
+                    }
+                } else {
+                    if (is_null($value)) {
+                        $q->whereNull($key);
+                    } else {
+                        $q->where($key, $value);
+                    }
+                }
+            });
+        }
+        return $query;
     }
 }

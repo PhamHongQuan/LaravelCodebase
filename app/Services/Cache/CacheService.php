@@ -1,9 +1,9 @@
 <?php
 namespace App\Services\Cache;
 
-use Cache;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use DateInterval;
-use Illuminate\Contracts\Cache\Lock;
 class CacheService {
     public function get(string $key, array | null $tags = null): mixed {
         return $tags ? Cache::tags($tags)->get($key) : Cache::get($key);
@@ -44,24 +44,42 @@ class CacheService {
         $deletedCount = 0;
 
         if ($cache instanceof \Illuminate\Cache\TaggedCache) {
-            $keys = $cache->getRedis()->keys("{$pattern}:*");
-            
-            foreach ($keys as $key) {
-                if ($cache->forget($key)) {
-                    $deletedCount++;
+            try {
+                // Get all keys matching the pattern
+                $keys = $cache->getRedis()->keys("*{$pattern}*");
+
+                foreach ($keys as $key) {
+                    // Extract the actual cache key from Redis key
+                    $realKey = str_replace(config('const.cache.prefix'), '', $key);
+                    $realKey = preg_replace('/^[^:]+:/', '', $realKey);
+
+                    // Delete the cache entry
+                    if ($cache->delete($realKey)) {
+                        $deletedCount++;
+                    }
                 }
+            } catch (\Exception $e) {
+                // Log error but don't throw to prevent breaking the application
+                Log::warning("Cache deleteBy failed for pattern: {$pattern}", ['error' => $e->getMessage()]);
+            }
+        } else {
+            try {
+                // For non-tagged cache, we need to get keys differently
+                $redis = Cache::getRedis();
+                $keys = $redis->keys("*{$pattern}*");
+
+                foreach ($keys as $key) {
+                    $realKey = str_replace(config('const.cache.prefix'), '', $key);
+                    if (Cache::delete($realKey)) {
+                        $deletedCount++;
+                    }
+                }
+            } catch (\Exception $e) {
+                // Log error but don't throw to prevent breaking the application
+                Log::warning("Cache deleteBy failed for pattern: {$pattern}", ['error' => $e->getMessage()]);
             }
         }
+
         return $deletedCount;
-    }
-
-    public function lock(string $name, int $seconds = 0, ?string $owner = null, array | null $tags = null): Lock {
-        $cache = $tags ? Cache::tags($tags) : Cache::store();
-        return $cache->lock($name, $seconds, $owner);
-    }
-
-    public function restoreLock(string $name, string $owner, array | null $tags = null): Lock {
-        $cache = $tags ? Cache::tags($tags) : Cache::store();
-        return $cache->restoreLock($name, $owner);
     }
 }
